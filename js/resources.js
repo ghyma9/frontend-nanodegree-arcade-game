@@ -35,6 +35,7 @@
      * called by the public image loader function.
      */
     function _load(url) {
+//        alert("_load url: " + url);
         if(resourceCache[url]) {
             /* If this URL has been previously loaded it will exist within
              * our resourceCache array. Just return that image rather

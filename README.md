@@ -1,6 +1,56 @@
-frontend-nanodegree-arcade-game
-===============================
+# Frogger Game
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission. Make sure the functions you write are **object-oriented** - either class functions (like Player and Enemy) or class prototype functions such as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately within your class and class prototype functions to refer to the object the function is called upon. Also be sure that the **readme.md** file is updated with your instructions on both how to 1. Run and 2. Play your arcade game.
+In this game you have a Player and Enemies (Bugs).
+The goal of the player is to reach the water,
+without colliding into any one of the enemies.
+The player can move left, right, up and down.
+The enemies move in varying speeds on the
+paved block portion of the scene. Once a
+the player collides with an enemy,
+the game is reset and the player moves
+back to the start square. Once the player
+reaches the water the game is won.
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+## Getting Started
+
+Run the game from a web browser with the
+given URL, which depends on your local
+environment. Once the game is loaded, it
+is ready to run.
+
+
+## Running The Game
+
+The game provides three control buttons:
+
+1. Start: Click on this button to start the game.
+   Resume: Click on this button to contiue the game.
+2. Pause: Click on this button to suspend the game.
+3. End: Click on this button to end the game.
+
+Once the game is started or resumed, user can move
+the player one block a time using the four arroow keys,
+up, down, left, and right keys.
+
+Collision happens when the plyer stands in front of
+an enemy on the same row and the enemy touched the player. At this moment,
+the player lost the game. The game returns back to the initial state.
+
+If the player safely pass through the enemies and
+reach the water area, the player wins the game and
+gain some random points showing on a popup window.
+
+
+## Author
+
+* **Yousuf Ma** - *Initial work* - [GitHub](https://github.com/ghyma9/frontend-nanodegree-arcade-game.git)
+
+## License
+
+This game is free of use.
+
+## Acknowledgments
+
+* Udacity provided the game engine and images
+* etc
+

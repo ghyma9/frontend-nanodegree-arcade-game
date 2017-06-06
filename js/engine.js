@@ -29,6 +29,79 @@ var Engine = (function(global) {
     canvas.height = 606;
     doc.body.appendChild(canvas);
 
+    // Begin customization
+    win.maxCols = 7;
+    win.maxRows = 6;
+    win.totalEnemies = 15;  // Total enemies in the allEnemies array.
+    win.run = false;
+    win.mainCount = 0;
+    win.resetCount = 2000;
+
+    var startBtn = doc.createElement('button'),
+        startText = doc.createTextNode("Start"),
+        pauseBtn = doc.createElement('button'),
+        pauseText = doc.createTextNode("Pause"),
+        endBtn = doc.createElement('button'),
+        endText = doc.createTextNode("End");
+    var btnDiv = doc.createElement('div');
+
+    canvas.width = maxCols * 101;
+    canvas.height = maxRows * 101;
+
+    // Reset buttons to initial states
+    function resetButtons() {
+        startText.data = "Start";
+        startBtn.removeAttribute('disabled');
+        pauseBtn.setAttribute('disabled', 'disabled');
+        endBtn.setAttribute('disabled', 'disabled');
+    }
+
+    function winTheGame() {
+        win.run = false;
+        startBtn.setAttribute('disabled', 'disabled');
+        pauseBtn.setAttribute('disabled', 'disabled');
+        endBtn.removeAttribute('disabled');
+        alert("You win " + getRandomInt(3, 8) + " points.");
+    }
+
+    // Event handler for Start button. Calls the main function to continue the game loop.
+    startBtn.addEventListener('click', function() {
+        win.run = true;
+        this.setAttribute('disabled', 'disabled');
+        startText.data = "Resume";
+        pauseBtn.removeAttribute('disabled');
+        endBtn.removeAttribute('disabled');
+        main();
+    });
+
+    // Event handler for Pause button. Calls the main function to repaint the game.
+    pauseBtn.addEventListener('click', function() {
+        win.run = false;
+        this.setAttribute('disabled', 'disabled');
+        startBtn.removeAttribute('disabled');
+        main();
+    });
+
+    /*
+     Event handler for End button. Calls the resetButtons and reset functions
+     to regerate the enemies.
+    */
+    endBtn.addEventListener('click', function () {
+        resetButtons();
+        init();
+    });
+
+    btnDiv.appendChild(startBtn);
+    btnDiv.appendChild(pauseBtn);
+    btnDiv.appendChild(endBtn);
+    startBtn.appendChild(startText);
+    pauseBtn.appendChild(pauseText);
+    endBtn.appendChild(endText);
+    doc.body.appendChild(btnDiv);
+    pauseBtn.setAttribute('disabled', 'disabled');
+    endBtn.setAttribute('disabled', 'disabled');
+    // End customization
+
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
@@ -42,16 +115,23 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
+        /* Set our lastTime variable which is used to determine the time delta
+         * for the next time this function is called.
+         */
+        lastTime = now;
+
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
         update(dt);
         render();
 
-        /* Set our lastTime variable which is used to determine the time delta
-         * for the next time this function is called.
-         */
-        lastTime = now;
+        if (player.row === 0) {
+            winTheGame();
+        }
+
+        // Check the run status
+        if (run === false) return;
 
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
@@ -78,9 +158,33 @@ var Engine = (function(global) {
      * functionality this way (you could just implement collision detection
      * on the entities themselves within your app.js file).
      */
+
+    /*
+     Check the distance betwen the char-boy and the enemy is within a half of the width
+     of an image tile. It yes, the collision happens. The game is ended and return its
+     initial states.
+    */
+    function checkCollisions() {
+        var collision = false;
+        var distance = 100000;
+        allEnemies.forEach(function(enemy) {
+            if (enemy.row === player.row) {
+                distance = Math.abs(player.x - enemy.x);
+                if (distance < Math.floor(enemy.imgWidth / 2)) {
+                    collision = true;
+                }
+            }
+        });
+        if (collision === true) {
+            resetButtons();
+            init();
+            alert("You have collided with an enemy.");
+        }
+    }
+
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -115,8 +219,8 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 6,
-            numCols = 5,
+            numRows = maxRows,
+            numCols = maxCols,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
@@ -159,7 +263,10 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        run = false;
+        player = new Player();
+        generateEnemies();
+        renderEntities();
     }
 
     /* Go ahead and load all of the images we know we're going to need to
